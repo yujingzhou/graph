@@ -1,0 +1,91 @@
+
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <link href="/Users/otupia/Documents/oauth_review/static/emac.css" media="all" rel="stylesheet" type="text/css" />
+        <link href="/Users/otupia/Documents/oauth_review/static/markdown.default.css" media="all" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <h1>oauth review 结果</h1>
+<h2>Controller review 结果</h2>
+<h3>Firstp2pLoginController.java</h3>
+<ul>
+<li>loginLimit 需要声明为final的</li>
+</ul>
+<p>javaref cn.ucfgroup.oauth.controller.Firstp2pLoginController.java#line(41)</p>
+<ul>
+<li>以下的field已经没有存在的必要，需要重构后删除</li>
+</ul>
+<p>javaref{cn.ucfgroup.oauth.controller.Firstp2pLoginController.java#line(41)|声明处} </p>
+<p>compare:focus:: line(261) 统一获取的地方</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="codehilite"><pre><span class="kd">private</span> <span class="n">String</span> <span class="n">responseRedirectUri</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="kd">private</span> <span class="n">String</span> <span class="n">responseType</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="kd">private</span> <span class="n">String</span> <span class="n">responseClientid</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="kd">private</span> <span class="n">String</span> <span class="n">oauthcode</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="kd">private</span> <span class="n">OauthClient</span> <span class="n">oc</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</pre></div>
+</td></tr></table>
+
+<ul>
+<li>下面的field需要重新命名，并声明为static final的</li>
+</ul>
+<p>javaref{cn.ucfgroup.oauth.controller.Firstp2pLoginController.java#line(47)|声明处} </p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="codehilite"><pre> <span class="kd">private</span> <span class="n">String</span> <span class="n">logoPath</span> <span class="o">=</span> <span class="s">&quot;firstp2p&quot;</span><span class="o">;</span><span class="c1">//默认logo</span>
+ <span class="kd">private</span> <span class="n">String</span> <span class="n">clientUrl</span> <span class="o">=</span> <span class="s">&quot;www.firstp2p.com&quot;</span><span class="o">;</span><span class="c1">//默认站点URL</span>
+ <span class="kd">private</span> <span class="n">String</span> <span class="n">clientName</span> <span class="o">=</span> <span class="s">&quot;第一P2P&quot;</span><span class="o">;</span><span class="c1">//默认站点名称</span>
+</pre></div>
+</td></tr></table>
+
+<ul>
+<li>currentCode操作代码重复的。看能否抽一个方法？</li>
+</ul>
+<p>javaref{cn.ucfgroup.oauth.controller.Firstp2pLoginController.java#line(86)|声明处}</p>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20</pre></div></td><td class="code"><div class="codehilite"><pre>    <span class="c1">//判断用户是否已登录，优先判断cookie</span>
+    <span class="n">Cookie</span><span class="o">[]</span> <span class="n">cookies</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getCookies</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">cookies</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">cookies</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">Cookie</span> <span class="n">cookie</span> <span class="o">:</span> <span class="n">cookies</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">cookie</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;currentCode&quot;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">cookie</span><span class="o">.</span><span class="na">getValue</span><span class="o">()))</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">codeMap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;();</span>
+                <span class="n">currentCode</span> <span class="o">=</span> <span class="n">cookie</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+                <span class="n">codeMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;code&quot;</span><span class="o">,</span> <span class="n">currentCode</span><span class="o">);</span>
+                <span class="n">ocs</span> <span class="o">=</span> <span class="n">oauthCodesService</span><span class="o">.</span><span class="na">queryOne</span><span class="o">(</span><span class="n">codeMap</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">ocs</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">user</span> <span class="o">=</span> <span class="n">sysUserService</span><span class="o">.</span><span class="na">queryById</span><span class="o">(</span><span class="n">ocs</span><span class="o">.</span><span class="na">getUserid</span><span class="o">());</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">currentCode</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+</pre></div>
+</td></tr></table>
+    </body>
+</html>
